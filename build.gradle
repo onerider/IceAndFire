@@ -3,6 +3,12 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'se.skogsbrynet.iceandfire.IceAndFireMain'
+    }
+}
+
 sourceCompatibility = 1.8
 
 repositories {
@@ -12,3 +18,4 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
