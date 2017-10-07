@@ -13,7 +13,6 @@ class Character {
         return name;
     }
 
-    @SuppressWarnings("unused")
     void setName(String name) {
         this.name = name;
     }
@@ -22,7 +21,6 @@ class Character {
         return url;
     }
 
-    @SuppressWarnings("unused")
     void setUrl(String url) {
         this.url = url;
     }
