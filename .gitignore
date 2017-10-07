@@ -1,0 +1,6 @@
+.out/
+.build/
+.gradle/
+*.class
+.idea/workspace.xml
+.idea/tasks.xml
