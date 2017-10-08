@@ -1,28 +1,11 @@
 package se.skogsbrynet.iceandfire.model;
 
+import se.skogsbrynet.iceandfire.service.UrlService;
+
 /**
- * Class for holding Character-attributes, mapping to
+ * Entity Character, mapping to
  * the IceAndFire JSON-object Character
  */
-class Character {
-
-    private String name;
-    private String url;
-
-    String getName() {
-        return name;
-    }
-
-    void setName(String name) {
-        this.name = name;
-    }
-
-    String getUrl() {
-        return url;
-    }
-
-    void setUrl(String url) {
-        this.url = url;
-    }
+public class Character extends Entity {
 
 }
