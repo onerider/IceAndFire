@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="IceAndFire_main:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/IceAndFire_main_jar</output-path>
+    <root id="archive" name="IceAndFire_main.jar">
+      <element id="module-output" name="IceAndFire_main" />
+    </root>
+  </artifact>
+</component>
