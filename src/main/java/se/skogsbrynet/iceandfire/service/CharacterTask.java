@@ -1,4 +1,4 @@
-package se.skogsbrynet.iceandfire.tmp;
+package se.skogsbrynet.iceandfire.service;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -10,12 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class CharacterTask implements Callable<List<Character>> {
+/**
+ * Creates a task for each page that is to be searched.
+ */
+class CharacterTask implements Callable<List<Character>> {
 
     private final int page;
     private final String nameToFind;
 
-    public CharacterTask(int page, String nameToFind) {
+     CharacterTask(int page, String nameToFind) {
         this.page = page;
         this.nameToFind = nameToFind;
     }
@@ -27,13 +30,14 @@ public class CharacterTask implements Callable<List<Character>> {
         ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=" + page + "&pageSize=50", HttpMethod.GET, entity, Character[].class);
         Character[] characters = responseEntity.getBody();
 
-        List<Character> charactersResult = new ArrayList<Character>();
+        List<Character> charactersResult = new ArrayList<>();
 
         for (Character character : characters) {
             if (characterIsFound(character)) {
                 charactersResult.add(character);
             }
         }
+
         return charactersResult;
     }
 

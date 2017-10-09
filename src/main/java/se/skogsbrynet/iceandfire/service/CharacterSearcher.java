@@ -6,7 +6,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
@@ -53,11 +52,11 @@ public class CharacterSearcher {
         try {
             List<Future<List<Character>>> futures = executor.invokeAll(tasks);
 
-            for (Future f: futures
+            for (Future<List<Character>> f: futures
                  ) {
-                charactersResult.addAll((Collection<? extends Character>) f.get());
+                charactersResult.addAll(f.get());
             }
-            charactersResult.addAll(futures.get(0).get());
+
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("Error when searching", e);
         }
@@ -98,7 +97,7 @@ public class CharacterSearcher {
     }
 
     private static String getHttpHeaderLink() {
-        HttpEntity<String> entity = HttpEntityFactory.getDefaultHttpEntity();
+        HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
 
         ResponseEntity<java.lang.Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=1&pageSize=50", HttpMethod.HEAD, entity, java.lang.Character[].class);
         HttpHeaders headerResponse = responseEntity.getHeaders();
