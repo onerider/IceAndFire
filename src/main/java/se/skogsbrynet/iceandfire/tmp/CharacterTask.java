@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import se.skogsbrynet.iceandfire.model.Character;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-public class CharacterTask implements Runnable {
-    private static final List<Character> charactersResult = Collections.synchronizedList(new ArrayList<Character>());
+public class CharacterTask implements Callable<List<Character>> {
+
     private final int page;
     private final String nameToFind;
 
@@ -20,26 +20,21 @@ public class CharacterTask implements Runnable {
         this.nameToFind = nameToFind;
     }
 
-    public static List<Character> getCharactersResult() {
-        return charactersResult;
-    }
 
     @Override
-    public void run() {
-        HttpEntity entity = SpringRestFactory.getHttpEntity();
-        ResponseEntity<Character[]> responseEntity = SpringRestFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=" + page + "&pageSize=50", HttpMethod.GET, entity, Character[].class);
+    public List<Character> call() {
+        HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
+        ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=" + page + "&pageSize=50", HttpMethod.GET, entity, Character[].class);
         Character[] characters = responseEntity.getBody();
+
+        List<Character> charactersResult = new ArrayList<Character>();
+
         for (Character character : characters) {
             if (characterIsFound(character)) {
-                addCharacterToResultList(character);
+                charactersResult.add(character);
             }
         }
-    }
-
-    private void addCharacterToResultList(Character character) {
-        synchronized (charactersResult) {
-            charactersResult.add(character);
-        }
+        return charactersResult;
     }
 
     private boolean characterIsFound(Character character) {

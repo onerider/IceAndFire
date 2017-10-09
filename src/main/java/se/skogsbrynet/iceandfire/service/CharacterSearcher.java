@@ -6,14 +6,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import se.skogsbrynet.iceandfire.model.Character;
 import se.skogsbrynet.iceandfire.tmp.CharacterTask;
-import se.skogsbrynet.iceandfire.tmp.IceAndFireThreadFactory;
-import se.skogsbrynet.iceandfire.tmp.SpringRestFactory;
+import se.skogsbrynet.iceandfire.tmp.HttpEntityFactory;
+import se.skogsbrynet.iceandfire.tmp.RestTemplateFactory;
 
 
 /**
@@ -22,46 +24,39 @@ import se.skogsbrynet.iceandfire.tmp.SpringRestFactory;
  */
 @SuppressWarnings("SpellCheckingInspection")
 public class CharacterSearcher {
-    private static final ArrayList<Thread> arrThreads = new ArrayList<>();
 
     /**
      * @param nameToFind The name to be searched for
      * @return List with matching characters
      */
-    public static List<Character> performSearch(String nameToFind) {
+    public List<Character> performSearch(String nameToFind) {
 
         if (!isValid(nameToFind)) {
             throw new RuntimeException("Invalid name");
         }
 
+        return search(nameToFind);
+    }
+
+    private List<Character> search(String nameToFind) throws RuntimeException {
+
+        List<Character> charactersResult = Collections.synchronizedList(new ArrayList<Character>());
+
         int numberOfPages = getNumberOfPages();
 
-        // Start a separate thread for each page
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfPages);
+
         for (int i = 1; i <= numberOfPages; i++) {
-            searchPage(nameToFind, i);
-        }
-
-        waitForThreadsToComplete();
-
-        return CharacterTask.getCharactersResult();
-    }
-
-    private static void searchPage(String nameToFind, int i) {
-        IceAndFireThreadFactory factory = new IceAndFireThreadFactory();
-        CharacterTask characterTask = new CharacterTask(i, nameToFind);
-        Thread thread = factory.newThread(characterTask);
-        thread.start();
-        arrThreads.add(thread);
-    }
-
-    private static void waitForThreadsToComplete() {
-        for (Thread arrThread : arrThreads) {
+            CharacterTask characterTask = new CharacterTask(i, nameToFind);
+            Future<List<Character>> pageResult = executor.submit(characterTask);
             try {
-                arrThread.join();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                charactersResult.addAll(pageResult.get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("Error when searching", e);
             }
         }
+
+        return charactersResult;
     }
 
     private static int getNumberOfPages() {
@@ -95,9 +90,9 @@ public class CharacterSearcher {
     }
 
     private static String getHttpHeaderLink() {
-        HttpEntity<String> entity = SpringRestFactory.getHttpEntity();
+        HttpEntity<String> entity = HttpEntityFactory.getDefaultHttpEntity();
 
-        ResponseEntity<java.lang.Character[]> responseEntity = SpringRestFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=1&pageSize=50", HttpMethod.HEAD, entity, java.lang.Character[].class);
+        ResponseEntity<java.lang.Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=1&pageSize=50", HttpMethod.HEAD, entity, java.lang.Character[].class);
         HttpHeaders headerResponse = responseEntity.getHeaders();
         return headerResponse.getFirst("Link");
     }

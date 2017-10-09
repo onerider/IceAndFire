@@ -1,7 +1,5 @@
 package se.skogsbrynet.iceandfire.model;
 
-import se.skogsbrynet.iceandfire.service.UrlService;
-
 /**
  * An entity is an object which will persist.
  */
@@ -10,11 +8,7 @@ import se.skogsbrynet.iceandfire.service.UrlService;
     private String name;
     private UrlService urlService;
 
-    public UrlService urlService() {
-        return urlService;
-    }
-
-    @Override
+   @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
