@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
@@ -13,9 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import se.skogsbrynet.iceandfire.model.Character;
-import se.skogsbrynet.iceandfire.tmp.CharacterTask;
-import se.skogsbrynet.iceandfire.tmp.HttpEntityFactory;
-import se.skogsbrynet.iceandfire.tmp.RestTemplateFactory;
 
 
 /**
@@ -46,17 +44,27 @@ public class CharacterSearcher {
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfPages);
 
+        List<CharacterTask> tasks = new ArrayList<>();
         for (int i = 1; i <= numberOfPages; i++) {
             CharacterTask characterTask = new CharacterTask(i, nameToFind);
-            Future<List<Character>> pageResult = executor.submit(characterTask);
-            try {
-                charactersResult.addAll(pageResult.get());
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException("Error when searching", e);
+            tasks.add(characterTask);
+
+        }
+        try {
+            List<Future<List<Character>>> futures = executor.invokeAll(tasks);
+
+            for (Future f: futures
+                 ) {
+                charactersResult.addAll((Collection<? extends Character>) f.get());
             }
+            charactersResult.addAll(futures.get(0).get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Error when searching", e);
         }
 
+
         return charactersResult;
+
     }
 
     private static int getNumberOfPages() {
