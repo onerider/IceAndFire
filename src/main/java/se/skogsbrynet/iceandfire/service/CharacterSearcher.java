@@ -32,7 +32,8 @@ public class CharacterSearcher {
 
         List<Character> charactersResult = Collections.synchronizedList(new ArrayList<Character>());
 
-        int numberOfPages = UrlService.getNumberOfPages();
+        CharacterUrlService urlService = new CharacterUrlService();
+        int numberOfPages = urlService.getNumberOfPages();
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfPages);
 

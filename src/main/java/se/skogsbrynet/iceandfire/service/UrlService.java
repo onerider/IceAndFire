@@ -8,15 +8,23 @@ import org.springframework.http.ResponseEntity;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UrlService {
+/**
+ * Responsible for constructing correct url for REST-call.
+ */
+public abstract class UrlService {
 
-    static int getNumberOfPages() {
+    /**
+     * Number of pages for the entity.
+     *
+     * @return number of pages
+     */
+    int getNumberOfPages() {
         String link = getHttpHeaderLink();
         String lastLink = getLastLinkFromHeaderLink(link);
         return getRelLastValue(lastLink);
     }
 
-    private static Integer getRelLastValue(String lastRel) {
+    private Integer getRelLastValue(String lastRel) {
         Pattern p = Pattern.compile("page=([0-9]+)");
         Matcher m = p.matcher(lastRel);
 
@@ -26,7 +34,7 @@ public class UrlService {
         return new Integer(m.group(1));
     }
 
-    private static String getLastLinkFromHeaderLink(String link) {
+    private String getLastLinkFromHeaderLink(String link) {
         String[] relLinks = link.split(",");
         String lastRel = null;
         for (String rel : relLinks) {
@@ -40,11 +48,16 @@ public class UrlService {
         return lastRel;
     }
 
-    private static String getHttpHeaderLink() {
+    private String getHttpHeaderLink() {
         HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
 
-        ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=1&pageSize=50", HttpMethod.HEAD, entity, Character[].class);
+        ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange(getUrl(), HttpMethod.HEAD, entity, getResponseType());
         HttpHeaders headerResponse = responseEntity.getHeaders();
         return headerResponse.getFirst("Link");
     }
+
+    abstract String getUrl();
+
+    abstract Class<Character[]> getResponseType();
+
 }
