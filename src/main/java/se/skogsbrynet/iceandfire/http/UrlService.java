@@ -52,16 +52,16 @@ public abstract class UrlService {
     private String getHttpHeaderLink() {
         HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
 
-        ResponseEntity<Entity[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange(getUrl(), HttpMethod.HEAD, entity, getResponseType());
+        ResponseEntity<Entity[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange(getUrlToFirstPage(), HttpMethod.HEAD, entity, getResponseType());
         HttpHeaders headerResponse = responseEntity.getHeaders();
         return headerResponse.getFirst("Link");
     }
 
-    abstract String getUrl();
+    abstract String getUrlToFirstPage();
 
     private Class<Entity[]> getResponseType() {
         return Entity[].class;
     }
 
-
+    abstract String getUrl();
 }

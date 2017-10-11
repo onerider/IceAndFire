@@ -14,7 +14,7 @@ import se.skogsbrynet.iceandfire.model.Entity;
  * and creating threads for each page
  */
 @SuppressWarnings("SpellCheckingInspection")
-public class EntitySearcher {
+public abstract class EntitySearcher {
 
     /**
      * @param nameToFind The name to be searched for
@@ -29,37 +29,7 @@ public class EntitySearcher {
         return search(nameToFind);
     }
 
-    private List<Entity> search(String nameToFind) throws RuntimeException {
-
-        List<Entity> entityResult = Collections.synchronizedList(new ArrayList<Entity>());
-
-        CharacterUrlService urlService = new CharacterUrlService();
-        int numberOfPages = urlService.getNumberOfPages();
-
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfPages);
-
-        List<SearchTask> tasks = new ArrayList<>();
-        for (int i = 1; i <= numberOfPages; i++) {
-            SearchTask searchTask = new CharacterSearchTask(i, nameToFind);
-            tasks.add(searchTask);
-
-        }
-        try {
-            List<Future<List<Entity>>> futures = executor.invokeAll(tasks);
-
-            for (Future<List<Entity>> f: futures
-                 ) {
-                entityResult.addAll(f.get());
-            }
-
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("Error when searching", e);
-        }
-
-
-        return entityResult;
-
-    }
+    abstract List<Entity> search(String nameToFind) throws RuntimeException;
 
     private static boolean isValid(String nameToFind) {
         return nameToFind != null && nameToFind.length() > 0;

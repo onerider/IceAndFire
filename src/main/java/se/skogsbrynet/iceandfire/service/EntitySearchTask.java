@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import se.skogsbrynet.iceandfire.model.Entity;
 
-public abstract class SearchTask implements Callable<List<Entity>> {
+public abstract class EntitySearchTask implements Callable<List<Entity>> {
     final int page;
     final String nameToFind;
 
-    SearchTask(int page, String nameToFind) {
+    EntitySearchTask(int page, String nameToFind) {
         this.page = page;
         this.nameToFind = nameToFind;
     }
 
 
-    abstract public  List<Entity> call();
+    abstract public List<Entity> call();
 
     boolean isFound(Entity entity) {
         String[] namesToFind = nameToFind.split(" ");
