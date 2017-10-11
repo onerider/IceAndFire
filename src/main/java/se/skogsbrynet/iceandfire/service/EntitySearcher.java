@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
+import se.skogsbrynet.iceandfire.http.CharacterUrlService;
 import se.skogsbrynet.iceandfire.model.Entity;
 
 
@@ -30,17 +31,17 @@ public class EntitySearcher {
 
     private List<Entity> search(String nameToFind) throws RuntimeException {
 
-        List<Entity> charactersResult = Collections.synchronizedList(new ArrayList<Entity>());
+        List<Entity> entityResult = Collections.synchronizedList(new ArrayList<Entity>());
 
         CharacterUrlService urlService = new CharacterUrlService();
         int numberOfPages = urlService.getNumberOfPages();
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfPages);
 
-        List<CharacterSearchTask> tasks = new ArrayList<>();
+        List<SearchTask> tasks = new ArrayList<>();
         for (int i = 1; i <= numberOfPages; i++) {
-            CharacterSearchTask characterSearchTask = new CharacterSearchTask(i, nameToFind);
-            tasks.add(characterSearchTask);
+            SearchTask searchTask = new CharacterSearchTask(i, nameToFind);
+            tasks.add(searchTask);
 
         }
         try {
@@ -48,7 +49,7 @@ public class EntitySearcher {
 
             for (Future<List<Entity>> f: futures
                  ) {
-                charactersResult.addAll(f.get());
+                entityResult.addAll(f.get());
             }
 
         } catch (InterruptedException | ExecutionException e) {
@@ -56,7 +57,7 @@ public class EntitySearcher {
         }
 
 
-        return charactersResult;
+        return entityResult;
 
     }
 

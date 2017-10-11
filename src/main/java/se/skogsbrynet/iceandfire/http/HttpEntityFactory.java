@@ -1,16 +1,16 @@
-package se.skogsbrynet.iceandfire.service;
+package se.skogsbrynet.iceandfire.http;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
-class HttpEntityFactory {
+public class HttpEntityFactory {
     private static HttpEntity httpEntity;
 
     static HttpEntity getHttpEntity(HttpHeaders headers) {
         return new HttpEntity<>("parameters", headers);
     }
 
-    static HttpEntity getDefaultHttpEntity() {
+    public static HttpEntity getDefaultHttpEntity() {
         if (httpEntity == null) {
             HttpHeaders headers = new HttpHeaders();
             //noinspection SpellCheckingInspection

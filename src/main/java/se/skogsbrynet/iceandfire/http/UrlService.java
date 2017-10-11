@@ -1,9 +1,10 @@
-package se.skogsbrynet.iceandfire.service;
+package se.skogsbrynet.iceandfire.http;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import se.skogsbrynet.iceandfire.model.Entity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +19,7 @@ public abstract class UrlService {
      *
      * @return number of pages
      */
-    int getNumberOfPages() {
+    public int getNumberOfPages() {
         String link = getHttpHeaderLink();
         String lastLink = getLastLinkFromHeaderLink(link);
         return getRelLastValue(lastLink);
@@ -51,13 +52,16 @@ public abstract class UrlService {
     private String getHttpHeaderLink() {
         HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
 
-        ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange(getUrl(), HttpMethod.HEAD, entity, getResponseType());
+        ResponseEntity<Entity[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange(getUrl(), HttpMethod.HEAD, entity, getResponseType());
         HttpHeaders headerResponse = responseEntity.getHeaders();
         return headerResponse.getFirst("Link");
     }
 
     abstract String getUrl();
 
-    abstract Class<Character[]> getResponseType();
+    private Class<Entity[]> getResponseType() {
+        return Entity[].class;
+    }
+
 
 }

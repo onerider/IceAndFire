@@ -1,13 +1,13 @@
-package se.skogsbrynet.iceandfire.service;
+package se.skogsbrynet.iceandfire.http;
 
 import org.springframework.web.client.RestTemplate;
 
-class RestTemplateFactory {
+public class RestTemplateFactory {
 
     private static final RestTemplate restTemplate = new RestTemplate();
 
 
-    static RestTemplate getRestTemplate() {
+    public static RestTemplate getRestTemplate() {
         return restTemplate;
     }
 

@@ -4,6 +4,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
+import se.skogsbrynet.iceandfire.http.HttpEntityFactory;
+import se.skogsbrynet.iceandfire.http.RestTemplateFactory;
 import se.skogsbrynet.iceandfire.model.Character;
 import se.skogsbrynet.iceandfire.model.Entity;
 
@@ -21,37 +23,20 @@ class CharacterSearchTask extends SearchTask {
     }
 
 
-    //@Override
+    @Override
     public List<Entity> call() {
         HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
         ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=" + page + "&pageSize=50", HttpMethod.GET, entity, Character[].class);
-        Character[] characters = responseEntity.getBody();
+        Entity[] characters = responseEntity.getBody();
 
         List<Entity> charactersResult = new ArrayList<>();
 
-        for (Character character : characters) {
+        for (Entity character : characters) {
             if (isFound(character)) {
                 charactersResult.add(character);
             }
         }
 
         return charactersResult;
-    }
-
-    boolean isFound(Entity character) {
-        String[] namesToFind = nameToFind.split(" ");
-        String[] namesOfCharacter = character.getName().split(" ");
-
-        if(namesToFind.length > namesOfCharacter.length) {
-            return false;
-        }
-
-        for(int i=0; i < namesToFind.length; i++) {
-            if(!namesToFind[i].equals(namesOfCharacter[i])) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

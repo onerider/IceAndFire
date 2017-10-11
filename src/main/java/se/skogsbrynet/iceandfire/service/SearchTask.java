@@ -1,6 +1,5 @@
 package se.skogsbrynet.iceandfire.service;
 
-
 import java.util.List;
 import java.util.concurrent.Callable;
 import se.skogsbrynet.iceandfire.model.Entity;
@@ -14,8 +13,24 @@ public abstract class SearchTask implements Callable<List<Entity>> {
         this.nameToFind = nameToFind;
     }
 
-    @Override
-    public abstract List<Entity> call();
 
-    abstract boolean isFound(Entity entity);
+    abstract public  List<Entity> call();
+
+    boolean isFound(Entity entity) {
+        String[] namesToFind = nameToFind.split(" ");
+        String[] namesOfEntity = entity.getName().split(" ");
+
+        if(namesToFind.length > namesOfEntity.length) {
+            return false;
+        }
+
+        for(int i=0; i < namesToFind.length; i++) {
+            if(!namesToFind[i].equals(namesOfEntity[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

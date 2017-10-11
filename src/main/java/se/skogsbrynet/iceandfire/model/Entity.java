@@ -1,6 +1,6 @@
 package se.skogsbrynet.iceandfire.model;
 
-import se.skogsbrynet.iceandfire.service.UrlService;
+import se.skogsbrynet.iceandfire.http.UrlService;
 
 /**
  * An entity is an object which will persist.
