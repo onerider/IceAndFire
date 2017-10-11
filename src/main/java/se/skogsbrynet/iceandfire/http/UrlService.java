@@ -63,5 +63,4 @@ public abstract class UrlService {
         return Entity[].class;
     }
 
-    abstract String getUrl();
 }

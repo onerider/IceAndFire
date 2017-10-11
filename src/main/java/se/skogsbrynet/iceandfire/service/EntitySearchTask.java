@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import se.skogsbrynet.iceandfire.model.Entity;
 
-public abstract class EntitySearchTask implements Callable<List<Entity>> {
+abstract class EntitySearchTask implements Callable<List<Entity>> {
     final int page;
-    final String nameToFind;
+    private final String nameToFind;
 
     EntitySearchTask(int page, String nameToFind) {
         this.page = page;

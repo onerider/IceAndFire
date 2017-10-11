@@ -7,7 +7,6 @@ public class CharacterUrlService extends UrlService {
         return "https://anapioficeandfire.com/api/characters?page=1&pageSize=50";
     }
 
-    @Override
     public String getUrl() {
         return "https://anapioficeandfire.com/api/characters?page=";
     }

@@ -1,11 +1,7 @@
 package se.skogsbrynet.iceandfire.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
 
-import se.skogsbrynet.iceandfire.http.CharacterUrlService;
 import se.skogsbrynet.iceandfire.model.Entity;
 
 
