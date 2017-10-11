@@ -7,6 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class HouseEntitySearcherTest {
     @Test
     public void search() throws Exception {
