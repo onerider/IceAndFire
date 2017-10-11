@@ -5,35 +5,32 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import se.skogsbrynet.iceandfire.model.Character;
+import se.skogsbrynet.iceandfire.model.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
+
 
 /**
  * Creates a task for each page that is to be searched.
  */
-class CharacterTask implements Callable<List<Character>> {
+class CharacterSearchTask extends SearchTask {
 
-    private final int page;
-    private final String nameToFind;
-
-     CharacterTask(int page, String nameToFind) {
-        this.page = page;
-        this.nameToFind = nameToFind;
+     CharacterSearchTask(int page, String nameToFind) {
+        super(page, nameToFind);
     }
 
 
-    @Override
-    public List<Character> call() {
+    //@Override
+    public List<Entity> call() {
         HttpEntity entity = HttpEntityFactory.getDefaultHttpEntity();
         ResponseEntity<Character[]> responseEntity = RestTemplateFactory.getRestTemplate().exchange("https://anapioficeandfire.com/api/characters?page=" + page + "&pageSize=50", HttpMethod.GET, entity, Character[].class);
         Character[] characters = responseEntity.getBody();
 
-        List<Character> charactersResult = new ArrayList<>();
+        List<Entity> charactersResult = new ArrayList<>();
 
         for (Character character : characters) {
-            if (characterIsFound(character)) {
+            if (isFound(character)) {
                 charactersResult.add(character);
             }
         }
@@ -41,7 +38,7 @@ class CharacterTask implements Callable<List<Character>> {
         return charactersResult;
     }
 
-    private boolean characterIsFound(Character character) {
+    boolean isFound(Entity character) {
         String[] namesToFind = nameToFind.split(" ");
         String[] namesOfCharacter = character.getName().split(" ");
 

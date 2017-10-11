@@ -5,7 +5,7 @@ import se.skogsbrynet.iceandfire.service.UrlService;
 /**
  * An entity is an object which will persist.
  */
- abstract class Entity {
+ public abstract class Entity {
     // assume name is unique identifier for an entity
     private String name;
     private UrlService urlService;

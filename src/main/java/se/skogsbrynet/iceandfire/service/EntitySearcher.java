@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-import se.skogsbrynet.iceandfire.model.Character;
+import se.skogsbrynet.iceandfire.model.Entity;
 
 
 /**
@@ -13,13 +13,13 @@ import se.skogsbrynet.iceandfire.model.Character;
  * and creating threads for each page
  */
 @SuppressWarnings("SpellCheckingInspection")
-public class CharacterSearcher {
+public class EntitySearcher {
 
     /**
      * @param nameToFind The name to be searched for
-     * @return List with matching characters
+     * @return List with matching entities
      */
-    public List<Character> performSearch(String nameToFind) {
+    public List<Entity> performSearch(String nameToFind) {
 
         if (!isValid(nameToFind)) {
             throw new RuntimeException("Invalid name");
@@ -28,25 +28,25 @@ public class CharacterSearcher {
         return search(nameToFind);
     }
 
-    private List<Character> search(String nameToFind) throws RuntimeException {
+    private List<Entity> search(String nameToFind) throws RuntimeException {
 
-        List<Character> charactersResult = Collections.synchronizedList(new ArrayList<Character>());
+        List<Entity> charactersResult = Collections.synchronizedList(new ArrayList<Entity>());
 
         CharacterUrlService urlService = new CharacterUrlService();
         int numberOfPages = urlService.getNumberOfPages();
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfPages);
 
-        List<CharacterTask> tasks = new ArrayList<>();
+        List<CharacterSearchTask> tasks = new ArrayList<>();
         for (int i = 1; i <= numberOfPages; i++) {
-            CharacterTask characterTask = new CharacterTask(i, nameToFind);
-            tasks.add(characterTask);
+            CharacterSearchTask characterSearchTask = new CharacterSearchTask(i, nameToFind);
+            tasks.add(characterSearchTask);
 
         }
         try {
-            List<Future<List<Character>>> futures = executor.invokeAll(tasks);
+            List<Future<List<Entity>>> futures = executor.invokeAll(tasks);
 
-            for (Future<List<Character>> f: futures
+            for (Future<List<Entity>> f: futures
                  ) {
                 charactersResult.addAll(f.get());
             }
